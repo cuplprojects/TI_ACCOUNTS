@@ -24,8 +24,8 @@ export default function LoginPage() {
   // Check if user is already authenticated and redirect to dashboard
   useEffect(() => {
     const currentUser = getCurrentUser();
-    if (currentUser && currentUser.role === "admin") {
-      router.replace("/admin/dashboard");
+    if (currentUser) {
+      router.replace("/pages/dashboard");
     }
   }, [router]);
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
           showConfirmButton: false,
           timer: 1500,
         }).then(() => {
-          router.push("/admin/dashboard");
+          router.push("/pages/dashboard");
         });
       }
     } catch (error) {

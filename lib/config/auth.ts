@@ -45,6 +45,31 @@ export const removeAuthTokens = (): void => {
   }
 };
 
+// Function to set current user in local storage
+export const setCurrentUser = (user: any): void => {
+  if (typeof window !== "undefined") {
+    console.log("Setting current user:", user.email);
+    localStorage.setItem("current_user", JSON.stringify(user));
+  }
+};
+
+// Function to get current user from local storage
+export const getCurrentUser = (): any => {
+  if (typeof window !== "undefined") {
+    const user = localStorage.getItem("current_user");
+    return user ? JSON.parse(user) : null;
+  }
+  return null;
+};
+
+// Function to remove current user from local storage
+export const removeCurrentUser = (): void => {
+  if (typeof window !== "undefined") {
+    console.log("Removing current user");
+    localStorage.removeItem("current_user");
+  }
+};
+
 // Debug function to check if tokens exist
 export const debugTokens = (): void => {
   if (typeof window !== "undefined") {
