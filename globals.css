@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+:root {
+  --primary: #00478f;
+  --primary-light: #3878b8;
+  --primary-lighter: #84bffa;
+  --success: #00a865;
+  --warning: #ff8800;
+  --gray-bg: #fafafa;
+  --gray-line: #e6e6e6;
+}
+
+body {
+  font-family: "Manrope", sans-serif;
+  background-color: var(--gray-bg);
+}
+
+/* Essential utility classes */
+.text-primary { color: var(--primary); }
+.bg-primary { background-color: var(--primary); }
+.text-success { color: var(--success); }
+.bg-success { background-color: var(--success); }
+.text-warning { color: var(--warning); }
+.bg-warning { background-color: var(--warning); }
+
+/* Hide scrollbar */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
