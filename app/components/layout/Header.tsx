@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/app/lib/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -12,6 +11,9 @@ import {
   faKey,
   faSignOutAlt,
   faBars,
+  faHome,
+  faChartLine,
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { usePageTitle } from "@/app/providers/PageTitleProvider";
 import { logout } from "@/app/lib/services/admin/authService";
@@ -28,7 +30,18 @@ export default function Header({ className, onMenuClick }: HeaderProps) {
   const { title } = usePageTitle();
   const { user, logout: authLogout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [showDropdown, setShowDropdown] = useState(false);
+
+  // Accounts tabs
+  const accountsTabs = [
+    { name: "Dashboard", path: "/dashboard", icon: faHome },
+    { name: "Sales", path: "/sales", icon: faChartLine },
+    { name: "Purchases", path: "/purchases", icon: faShoppingCart }
+  ];
+
+  const isLoginPage = pathname.includes("login");
+  const shouldShowNav = !isLoginPage;
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -71,9 +84,6 @@ export default function Header({ className, onMenuClick }: HeaderProps) {
     };
   }, []);
 
-  // CSS class for truncated text with tooltip
-  const truncateWithTooltip = "truncate hover:cursor-help";
-
   // Get the appropriate change password link based on user role
   const getChangePasswordLink = () => {
     return user?.role === "seller"
@@ -93,23 +103,42 @@ export default function Header({ className, onMenuClick }: HeaderProps) {
           >
             <FontAwesomeIcon icon={faBars} className="h-5 w-5" />
           </button>
-          <h1 className="display-4-bold text-blue-00 truncate text-base sm:text-lg md:text-xl lg:text-2xl">{title}</h1>
+          <button
+            onClick={() => router.push("/dashboard", { scroll: false })}
+            className="display-4-bold text-blue-00 truncate text-base sm:text-lg md:text-xl lg:text-2xl hover:opacity-80 transition-opacity cursor-pointer"
+          >
+            {title}
+          </button>
         </div>
 
         <div className="flex items-center gap-2 xs:gap-3 sm:gap-5 flex-shrink-0">
-          {/* Chat */}
-          <button
-            className="p-2 rounded-full hover:bg-gray-bg text-gray-10 hover:text-blue-00 transition-colors"
-            onClick={() => router.push("/seller/chats")}
-            title="Chat"
-          >
-            <Image
-              src="/images/common/header/chat.png"
-              alt="Chat"
-              width={18}
-              height={18}
-            />
-          </button>
+          {/* Navigation Tabs - shown on all pages except login */}
+          {shouldShowNav && (
+            <div className="flex items-center space-x-4 border-r border-gray-200 pr-4">
+              {accountsTabs.map((tab, index) => {
+                const isActive = pathname.includes(tab.path.replace("/", ""));
+                return (
+                  <div key={tab.path} className="flex items-center gap-3">
+                    <button
+                      onClick={() => router.push(tab.path, { scroll: false })}
+                      className={cn(
+                        "flex items-center gap-2 text-sm font-medium transition-colors",
+                        isActive
+                          ? "text-blue-00"
+                          : "text-gray-600 hover:text-gray-900"
+                      )}
+                    >
+                      <FontAwesomeIcon icon={tab.icon} className="h-4 w-4" />
+                      {tab.name}
+                    </button>
+                    {index < accountsTabs.length - 1 && (
+                      <div className="h-5 w-px bg-gray-300"></div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* User Profile */}
           <div className="flex items-center relative">

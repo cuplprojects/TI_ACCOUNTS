@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import accountsService from "@/lib/services/accountsService";
-import Loader from "@/components/ui/Loader";
+import TableSkeleton from "@/app/components/common/TableSkeleton";
 
 interface PurchaseTransaction {
   id: string;
@@ -31,7 +31,8 @@ export default function PurchasePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [purchaseData, setPurchaseData] = useState<PurchaseTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({ totalPages: 1, totalTransactions: 0 });
   const [dateRange, setDateRange] = useState({ startDate: "", endDate: "" });
@@ -65,6 +66,7 @@ export default function PurchasePage() {
       console.error("Error:", err);
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -148,15 +150,13 @@ export default function PurchasePage() {
         </nav>
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center h-64">
-          <Loader />
-        </div>
+      {/* Loading State - only show on initial load */}
+      {initialLoading && (
+        <TableSkeleton rows={10} columns={7} />
       )}
 
       {/* Error State */}
-      {error && !loading && (
+      {error && !initialLoading && (
         <div className="m-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-red-800 font-medium">Error</p>
           <p className="text-red-600 text-sm">{error}</p>
@@ -170,7 +170,7 @@ export default function PurchasePage() {
       )}
 
       {/* Purchase Table */}
-      {!loading && !error && (
+      {!initialLoading && !error && (
         <>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">

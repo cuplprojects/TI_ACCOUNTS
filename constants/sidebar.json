@@ -8,25 +8,21 @@
       "topLevel": true
     },
     {
-      "title": "Sales",
-      "icon": "/images/common/sidebar/orders.png",
-      "path": "/sales",
-      "userTypes": ["admin", "seller", "customer"],
-      "topLevel": true
-    },
-    {
-      "title": "Purchase",
-      "icon": "/images/common/sidebar/pickup.png",
-      "path": "/purchase",
-      "userTypes": ["admin", "seller", "customer"],
-      "topLevel": true
-    },
-    {
       "title": "Settings",
       "icon": "/images/common/sidebar/settings.png",
       "path": "/settings",
       "userTypes": ["admin", "seller", "customer"],
       "topLevel": false
+    }
+  ],
+  "accountsTabs": [
+    {
+      "title": "Sales",
+      "path": "/sales"
+    },
+    {
+      "title": "Purchases",
+      "path": "/purchases"
     }
   ]
 }

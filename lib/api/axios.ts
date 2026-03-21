@@ -83,7 +83,7 @@ axiosInstance.interceptors.request.use(
         console.log("Token is expired, removing tokens");
         removeAuthTokens();
         if (typeof window !== "undefined") {
-          window.location.href = "/auth/login";
+          window.location.href = "/login";
         }
         return Promise.reject(new Error("Token expired"));
       } else if (isTokenExpiringSoon(token) && !isRefreshing) {
@@ -248,11 +248,11 @@ axiosInstance.interceptors.response.use(
             }));
             
             // Only redirect for auth-related pages or if explicitly needed
-            if (window.location.pathname.includes('/auth/') || 
+            if (window.location.pathname.includes('/login') || 
                 window.location.pathname === '/dashboard' ||
                 errorMessage.toLowerCase().includes('token')) {
               setTimeout(() => {
-                window.location.href = "/auth/login";
+                window.location.href = "/login";
               }, 500);
             }
           }
@@ -332,7 +332,7 @@ axiosInstance.interceptors.response.use(
                  errorMessage.toLowerCase().includes('unauthorized') ||
                  errorMessage.toLowerCase().includes('forbidden'))) {
               setTimeout(() => {
-                window.location.href = "/auth/login";
+                window.location.href = "/login";
               }, 500);
             }
             return Promise.reject(error);
@@ -351,7 +351,7 @@ axiosInstance.interceptors.response.use(
                errorMessage.toLowerCase().includes('unauthorized') ||
                errorMessage.toLowerCase().includes('forbidden'))) {
             setTimeout(() => {
-              window.location.href = "/auth/login";
+              window.location.href = "/login";
             }, 500);
           }
           return Promise.reject(refreshError);

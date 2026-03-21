@@ -6,20 +6,6 @@
       "path": "/dashboard",
       "userTypes": ["admin"],
       "topLevel": true
-    },
-    {
-      "title": "Sales",
-      "icon": "/images/common/sidebar/customers.png",
-      "path": "/sales",
-      "userTypes": ["admin"],
-      "topLevel": true
-    },
-    {
-      "title": "Purchase",
-      "icon": "/images/common/sidebar/orders.png",
-      "path": "/purchases",
-      "userTypes": ["admin"],
-      "topLevel": true
     }
   ],
   "others": [
@@ -29,6 +15,16 @@
       "path": "/settings",
       "userTypes": ["admin"],
       "topLevel": false
+    }
+  ],
+  "accountsTabs": [
+    {
+      "title": "Sales",
+      "path": "/sales"
+    },
+    {
+      "title": "Purchases",
+      "path": "/purchases"
     }
   ]
 }

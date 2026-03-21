@@ -41,14 +41,30 @@ export default function PageTitleProvider({
 
   // Set title based on current route and sidebar.json
   useEffect(() => {
-    // Extract the main path segment
-    const mainPath = pathname?.split("/").filter(Boolean)[1] || "";
-    const matchPath = `/${mainPath}`;
-
-    // Find matching sidebar item
-    const matchingItem = sidebarData.navigation.find(
-      (item) => item.path === matchPath
-    );
+    // Extract all path segments
+    const segments = pathname?.split("/").filter(Boolean) || [];
+    
+    // Try to find a matching path - check from the last segment backwards
+    let matchingItem = null;
+    
+    // First check if the full path matches (e.g., /dashboard/accounts/sales)
+    for (let i = segments.length; i > 0; i--) {
+      const testPath = "/" + segments.slice(0, i).join("/");
+      
+      // Check navigation
+      matchingItem = sidebarData.navigation.find(
+        (item) => item.path === testPath
+      );
+      
+      // If not found, check accountsTabs
+      if (!matchingItem) {
+        matchingItem = sidebarData.accountsTabs.find(
+          (item) => item.path === testPath
+        );
+      }
+      
+      if (matchingItem) break;
+    }
 
     if (matchingItem) {
       setTitle(matchingItem.title);
