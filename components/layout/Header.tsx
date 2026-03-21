@@ -35,10 +35,10 @@ export default function Header({ className, onMenuClick }: HeaderProps) {
   const handleLogout = async () => {
     try {
       logout();
-      router.push("/auth/login");
+      router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
-      router.push("/auth/login");
+      router.push("/login");
     }
   };
 

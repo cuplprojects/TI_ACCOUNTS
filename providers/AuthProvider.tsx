@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           );
           if (!isAuth) {
             console.log("User not authenticated, redirecting to login");
-            router.replace("/auth/login");
+            router.replace("/login");
           }
         }
       } catch (error) {
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         const isAuth = isAuthRoute(pathname);
         if (!isAuth) {
-          router.replace("/auth/login");
+          router.replace("/login");
         }
       }
     };
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log(
             "User not authenticated on route change, redirecting to login"
           );
-          router.replace("/auth/login");
+          router.replace("/login");
         }
       }
     }
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     removeCurrentUser();
     removeAuthTokens();
-    router.replace("/auth/login");
+    router.replace("/login");
   };
 
   // Show loading state while checking authentication
@@ -168,7 +168,7 @@ export const useRequireAuth = () => {
       
       if (!authToken) {
         if (!isAuthRoute(pathname)) {
-          router.replace("/auth/login");
+          router.replace("/login");
         }
       }
     }
