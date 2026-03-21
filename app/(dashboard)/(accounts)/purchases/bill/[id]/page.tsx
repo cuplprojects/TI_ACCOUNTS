@@ -5,69 +5,61 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Download, CloudUpload } from "lucide-react";
 
-export default function InvoiceDetailPage() {
+export default function PurchaseBillDetailPage() {
   const params = useParams();
-  const invoiceIndex = parseInt(params.id as string) - 1;
   
-  const invoiceData = {
-    invoiceNo: "TTE/25-26/1",
+  const billData = {
+    billNo: "TI/P/25-26/1",
     orderId: "TI/1110",
-    customerName: "Kristina Marfitsyna",
-    customerEmail: "kgmarfitsyna@gmail.com",
-    customerMobile: "+1 719 259 3091",
+    vendorName: "Sanwaliya Enterprise",
+    vendorEmail: "vendor@sanwaliya.com",
+    vendorMobile: "+91 98765 43210",
     shippingAddress: {
-      line1: "68 Lady Hay Road",
-      line2: "Leicester",
-      line3: "LE3 9SJ",
-      line4: "United Kingdom"
+      line1: "123 Vendor Street",
+      line2: "Business District",
+      line3: "City",
+      line4: "State - 123456"
     },
     billingAddress: {
-      line1: "1 Kiln Orchard Way",
-      line2: "Birstall, Leicester",
-      line3: "LE4 3NT",
-      line4: "United Kingdom"
+      line1: "456 Billing Address",
+      line2: "Commercial Area",
+      line3: "City",
+      line4: "State - 654321"
     },
-    invoiceDate: "21/05/2025",
-    invoiceCurrency: "INR",
+    billDate: "21/05/2025",
+    currency: "INR",
     exchangeRate: "1",
-    exportType: "Export with IGST",
-    payment: "RazorPay",
-    port: "INBOM4",
-    logistics: "DHL Express",
-    awb: "RY426034563IN",
-    shippingBill: "524566",
-    sbDate: "21/05/2025",
-    egm: "0003695",
+    payment: "Bank Transfer",
     items: [
       { 
         id: 1,
-        name: "Himalaya Liv.52 Tablet", 
-        qty: "10", 
+        name: "Product A", 
+        qty: "20", 
         hsn: "30049011", 
         gst: "05%", 
-        rate: "220.00", 
-        discount: "10%", 
-        dRate: "198.00", 
-        amount: "1980.00" 
+        rate: "150.00", 
+        discount: "5%", 
+        dRate: "142.50", 
+        amount: "2850.00" 
       },
       { 
         id: 2,
-        name: "Baidyanath Prahakarvati 20 Tablet", 
-        qty: "05", 
+        name: "Product B", 
+        qty: "10", 
         hsn: "30049011", 
         gst: "12%", 
-        rate: "120.00", 
-        discount: "10%", 
-        dRate: "108.00", 
-        amount: "540.00" 
+        rate: "200.00", 
+        discount: "0%", 
+        dRate: "200.00", 
+        amount: "2000.00" 
       }
     ],
-    paymentRef: "ekjfejkdhkjhkajsdnjkjd587845155kjbkajsb",
-    totalItems: "2/15",
-    amountInWords: "Two Thousand Five Hundred And Twenty Rupees",
-    taxableAmount: "2,367.86",
-    igst: "2,367.86",
-    total: "2520.00"
+    paymentRef: "kjsdhkjsdhkjsdhkjsdhkjsd123456",
+    totalItems: "2/30",
+    amountInWords: "Four Thousand Eight Hundred And Fifty Rupees",
+    taxableAmount: "4,850.00",
+    igst: "582.00",
+    total: "5432.00"
   };
 
   return (
@@ -75,35 +67,35 @@ export default function InvoiceDetailPage() {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200">
         <div className="flex justify-between items-center">
-          <Link href="/sales" className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium">
+          <Link href="/purchases" className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-medium">
             <span>←</span>
-            <span>Sales/{invoiceData.invoiceNo}</span>
+            <span>Purchases/{billData.billNo}</span>
           </Link>
-          <h1 className="text-xl font-semibold text-gray-900">Sales Invoice Details</h1>
-          <div className="text-blue-600 font-medium text-sm">Order Id # {invoiceData.orderId}</div>
+          <h1 className="text-xl font-semibold text-gray-900">Purchase Bill Details</h1>
+          <div className="text-blue-600 font-medium text-sm">Bill Id # {billData.orderId}</div>
         </div>
       </div>
 
       <div className="p-6">
-        {/* Customer Details Section */}
+        {/* Vendor Details Section */}
         <div className="grid grid-cols-4 gap-6 mb-8">
-          {/* Left Column - Customer Info */}
+          {/* Left Column - Vendor Info */}
           <div className="space-y-2">
             <div className="flex gap-2">
-              <span className="text-sm text-gray-700">Name :</span>
-              <p className="text-sm text-gray-900 font-medium">{invoiceData.customerName}</p>
+              <span className="text-sm text-gray-700">Vendor Name :</span>
+              <p className="text-sm text-gray-900 font-medium">{billData.vendorName}</p>
             </div>
             <div className="flex gap-2">
               <span className="text-sm text-gray-700">Email :</span>
-              <p className="text-sm text-gray-900">{invoiceData.customerEmail}</p>
+              <p className="text-sm text-gray-900">{billData.vendorEmail}</p>
             </div>
             <div className="flex gap-2">
               <span className="text-sm text-gray-700">Mobile # :</span>
-              <p className="text-sm text-gray-900">{invoiceData.customerMobile}</p>
+              <p className="text-sm text-gray-900">{billData.vendorMobile}</p>
             </div>
             <div className="flex gap-2">
               <span className="text-sm text-gray-700">Payment :</span>
-              <p className="text-sm text-gray-900 font-medium">{invoiceData.payment}</p>
+              <p className="text-sm text-gray-900 font-medium">{billData.payment}</p>
             </div>
           </div>
 
@@ -112,10 +104,10 @@ export default function InvoiceDetailPage() {
             <div>
               <span className="text-sm text-gray-700 font-medium">Shipping Address :</span>
               <div className="text-sm text-gray-900 space-y-1">
-                <p>{invoiceData.shippingAddress.line1}</p>
-                <p>{invoiceData.shippingAddress.line2}</p>
-                <p>{invoiceData.shippingAddress.line3}</p>
-                <p>{invoiceData.shippingAddress.line4}</p>
+                <p>{billData.shippingAddress.line1}</p>
+                <p>{billData.shippingAddress.line2}</p>
+                <p>{billData.shippingAddress.line3}</p>
+                <p>{billData.shippingAddress.line4}</p>
               </div>
             </div>
           </div>
@@ -125,60 +117,28 @@ export default function InvoiceDetailPage() {
             <div>
               <span className="text-sm text-gray-700 font-medium">Billing Address :</span>
               <div className="text-sm text-gray-900 space-y-1">
-                <p>{invoiceData.billingAddress.line1}</p>
-                <p>{invoiceData.billingAddress.line2}</p>
-                <p>{invoiceData.billingAddress.line3}</p>
-                <p>{invoiceData.billingAddress.line4}</p>
+                <p>{billData.billingAddress.line1}</p>
+                <p>{billData.billingAddress.line2}</p>
+                <p>{billData.billingAddress.line3}</p>
+                <p>{billData.billingAddress.line4}</p>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Invoice Details */}
+          {/* Right Column - Bill Details */}
           <div className="space-y-2">
             <div className="flex gap-2">
-              <span className="text-sm text-gray-700">Invoice Date :</span>
-              <p className="text-sm text-gray-900">{invoiceData.invoiceDate}</p>
+              <span className="text-sm text-gray-700">Purchase Date :</span>
+              <p className="text-sm text-gray-900">{billData.billDate}</p>
             </div>
             <div className="flex gap-2">
-              <span className="text-sm text-gray-700">Invoice Currency :</span>
-              <p className="text-sm text-gray-900">{invoiceData.invoiceCurrency}</p>
+              <span className="text-sm text-gray-700">Currency :</span>
+              <p className="text-sm text-gray-900">{billData.currency}</p>
             </div>
             <div className="flex gap-2">
               <span className="text-sm text-gray-700">Exchange Rate :</span>
-              <p className="text-sm text-gray-900">{invoiceData.exchangeRate}</p>
+              <p className="text-sm text-gray-900">{billData.exchangeRate}</p>
             </div>
-            <div className="flex gap-2">
-              <span className="text-sm text-gray-700">Export Type :</span>
-              <p className="text-sm text-gray-900">{invoiceData.exportType}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Logistics Info */}
-        <div className="flex gap-8 mb-8 text-sm flex-wrap">
-          <div className="flex gap-2">
-            <span className="text-gray-700">Port :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.port}</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-gray-700">Logistics :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.logistics}</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-gray-700">AWB :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.awb}</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-gray-700">Shipping Bill :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.shippingBill}</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-gray-700">SB Date :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.sbDate}</span>
-          </div>
-          <div className="flex gap-2">
-            <span className="text-gray-700">EGM :</span>
-            <span className="text-gray-900 font-medium">{invoiceData.egm}</span>
           </div>
         </div>
 
@@ -203,7 +163,7 @@ export default function InvoiceDetailPage() {
                 </tr>
               </thead>
               <tbody>
-                {invoiceData.items.map((item) => (
+                {billData.items.map((item) => (
                   <tr key={item.id} className="border-b border-gray-200">
                     <td className="py-2 px-2 text-gray-900 text-center">{item.id}</td>
                     <td className="py-2 px-2 text-gray-900 text-center">{item.name}</td>
@@ -227,34 +187,22 @@ export default function InvoiceDetailPage() {
           <div className="space-y-3">
             <div>
               <span className="text-sm text-gray-700">Payment Ref :</span>
-              <p className="text-sm text-gray-900 inline ml-2">{invoiceData.paymentRef}</p>
+              <p className="text-sm text-gray-900 inline ml-2">{billData.paymentRef}</p>
             </div>
             <div>
               <span className="text-sm text-gray-700">Total Items/Qty :</span>
-              <p className="text-sm text-gray-900 inline ml-2">{invoiceData.totalItems}</p>
+              <p className="text-sm text-gray-900 inline ml-2">{billData.totalItems}</p>
             </div>
             <div>
               <span className="text-sm text-gray-700">A mount in words :</span>
-              <p className="text-sm text-gray-900 inline ml-2">{invoiceData.amountInWords}</p>
+              <p className="text-sm text-gray-900 inline ml-2">{billData.amountInWords}</p>
             </div>
             <div className="flex gap-4 mt-4">
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-1">
                   <Download size={20} className="text-gray-700" />
                 </div>
-                <span className="text-xs text-gray-600">Invoice</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-1">
-                  <CloudUpload size={20} className="text-gray-700" />
-                </div>
-                <span className="text-xs text-gray-600">AWB</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center mb-1">
-                  <CloudUpload size={20} className="text-gray-700" />
-                </div>
-                <span className="text-xs text-gray-600">SB</span>
+                <span className="text-xs text-gray-600">Bill</span>
               </div>
             </div>
           </div>
@@ -264,27 +212,27 @@ export default function InvoiceDetailPage() {
             <div className="text-right flex flex-col">
               <div className="flex justify-end gap-2">
                 <span className="text-sm text-gray-700">Taxable Amount :</span>
-                <p className="text-sm text-gray-900 font-semibold">₹ {invoiceData.taxableAmount}</p>
+                <p className="text-sm text-gray-900 font-semibold">₹ {billData.taxableAmount}</p>
               </div>
             </div>
             <div className="text-right flex flex-col">
               <div className="flex justify-end gap-2">
                 <span className="text-sm text-gray-700">IGST :</span>
-                <p className="text-sm text-gray-900 font-semibold">₹ {invoiceData.igst}</p>
+                <p className="text-sm text-gray-900 font-semibold">₹ {billData.igst}</p>
               </div>
             </div>
             <div className="text-right flex flex-col">
               <div className="flex justify-end gap-2">
                 <span className="text-sm text-gray-700 font-semibold">Total :</span>
-                <p className="text-lg text-gray-900 font-bold">₹ {invoiceData.total}</p>
+                <p className="text-lg text-gray-900 font-bold">₹ {billData.total}</p>
               </div>
             </div>
             <div className="flex gap-3 mt-6 justify-end">
-              <Link href="/sales/create?edit=true" className="bg-blue-900 text-white px-8 py-2 rounded-lg hover:bg-blue-800 font-medium inline-block">
-                Add/ Edit Shipping Details
+              <Link href={`/purchases/create?edit=true`} className="bg-blue-900 text-white px-8 py-2 rounded-lg hover:bg-blue-800 font-medium inline-block">
+                Edit Bill
               </Link>
               <button className="bg-red-500 text-white px-8 py-2 rounded-lg hover:bg-red-600 font-medium">
-                Cancel Invoice
+                Cancel Bill
               </button>
             </div>
           </div>

@@ -6,6 +6,30 @@ import Link from "next/link";
 export default function SalesPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows(new Set());
+      setSelectAll(false);
+    } else {
+      const allRows = new Set(transactionData.map((_, index) => index));
+      setSelectedRows(allRows);
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectRow = (index: number) => {
+    const newSelected = new Set(selectedRows);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedRows(newSelected);
+    setSelectAll(newSelected.size === transactionData.length);
+  };
 
   const transactionData = [
     {
@@ -147,7 +171,7 @@ export default function SalesPage() {
             </select>
             <Link 
               href="/sales/create" 
-              className="bg-blue-600 text-white px-3 py-1.5 text-sm rounded hover:bg-blue-700 flex items-center gap-1"
+              className="bg-blue-900 text-white px-3 py-1.5 text-sm rounded hover:bg-blue-800 flex items-center gap-1"
             >
               <span>+</span>
               Create Invoice
@@ -203,43 +227,61 @@ export default function SalesPage() {
       </div>
 
       {/* Transaction Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Date</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Invoice #</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Ref #</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Buyer Name</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Country</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Airway Bill</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Logistics</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">SB Ref #</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Value</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900">Payment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactionData.map((transaction, index) => (
-              <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.date}</td>
-                <td className="px-3 py-2 border-r border-gray-200">
-                  <Link href={`/sales/invoice/${index + 1}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                    {transaction.invoiceNo}
-                  </Link>
-                </td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.refNo}</td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.buyerName}</td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.country}</td>
-                <td className="px-3 py-2 text-blue-600 border-r border-gray-200">{transaction.airwayBill}</td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.logistics}</td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{transaction.sbRef}</td>
-                <td className="px-3 py-2 text-gray-900 font-medium border-r border-gray-200">{transaction.value}</td>
-                <td className="px-3 py-2 text-gray-900">{transaction.payment}</td>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="overflow-x-auto rounded-lg">
+          <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-100">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Invoice #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Ref #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Buyer Name</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Country</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Airway Bill</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Logistics</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">SB Ref #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Value</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Payment</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {transactionData.map((transaction, index) => (
+                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors last:border-b-0">
+                  <td className="px-4 py-3 text-gray-900">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.has(index)}
+                      onChange={() => handleSelectRow(index)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.date}</td>
+                  <td className="px-4 py-3">
+                    <Link href={`/sales/invoice/${index + 1}`} className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium">
+                      {transaction.invoiceNo}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.refNo}</td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.buyerName}</td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.country}</td>
+                  <td className="px-4 py-3 text-blue-600">{transaction.airwayBill}</td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.logistics}</td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.sbRef}</td>
+                  <td className="px-4 py-3 text-gray-900 font-medium">{transaction.value}</td>
+                  <td className="px-4 py-3 text-gray-900">{transaction.payment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Bottom Section */}
@@ -247,18 +289,16 @@ export default function SalesPage() {
         <div className="flex justify-between items-center">
           {/* Summary Cards */}
           <div className="flex gap-4">
-            <div className="bg-white px-4 py-2 rounded-full border border-green-300 shadow-sm">
+            <div className="bg-green-100 px-6 py-2 rounded-lg border-2 border-green-600">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">Total</span>
-                <span className="text-lg font-semibold text-green-600">₹ 1,00,000</span>
-                
+                <span className="text-sm text-green-600 font-medium">Total</span>
+                <span className="text-base font-semibold text-green-600">₹ 1,00,000</span>
               </div>
             </div>
-            <div className=" px-4 py-2 rounded-full border border-red-300 shadow-sm">
+            <div className="bg-red-100 px-6 py-2 rounded-lg border-2 border-red-600">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700 text-red-600">Cancelled</span>
-                <span className="text-lg font-semibold text-red-600">₹ 1,000</span>
-                
+                <span className="text-sm text-red-600 font-medium">Cancelled</span>
+                <span className="text-base font-semibold text-red-600">₹ 1,000</span>
               </div>
             </div>
           </div>

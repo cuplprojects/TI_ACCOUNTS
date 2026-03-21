@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 
 type SalesTransaction = {
   date: string;
@@ -15,15 +16,34 @@ type SalesTransaction = {
   payment: string;
 };
 
-type SortField = keyof SalesTransaction | null;
-type SortOrder = "asc" | "desc";
-
 export default function SalesDashboard() {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortField, setSortField] = useState<SortField>(null);
-  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
   const itemsPerPage = 5;
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows(new Set());
+      setSelectAll(false);
+    } else {
+      const allRows = new Set(allSalesData.map((_, index) => index));
+      setSelectedRows(allRows);
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectRow = (index: number) => {
+    const newSelected = new Set(selectedRows);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedRows(newSelected);
+    setSelectAll(newSelected.size === allSalesData.length);
+  };
 
   // Sample data matching the image
   const allSalesData: SalesTransaction[] = [
@@ -139,44 +159,12 @@ export default function SalesDashboard() {
 
   // Sorting and pagination logic
   const sortedData = useMemo(() => {
-    let sorted = [...allSalesData];
-    
-    if (sortField) {
-      sorted.sort((a, b) => {
-        const aVal = a[sortField as keyof SalesTransaction];
-        const bVal = b[sortField as keyof SalesTransaction];
-        
-        if (typeof aVal === "string" && typeof bVal === "string") {
-          return sortOrder === "asc" 
-            ? aVal.localeCompare(bVal)
-            : bVal.localeCompare(aVal);
-        }
-        
-        return sortOrder === "asc" ? (aVal > bVal ? 1 : -1) : (aVal < bVal ? 1 : -1);
-      });
-    }
-    
-    return sorted;
-  }, [sortField, sortOrder]);
+    return allSalesData;
+  }, []);
 
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const paginatedData = sortedData.slice(startIdx, startIdx + itemsPerPage);
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-    setCurrentPage(1);
-  };
-
-  const getSortIndicator = (field: SortField) => {
-    if (sortField !== field) return " ↕";
-    return sortOrder === "asc" ? " ↑" : " ↓";
-  };
 
   return (
     <div className="bg-white">
@@ -247,117 +235,69 @@ export default function SalesDashboard() {
           
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded text-xs">This Year</span>
-            <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm flex items-center gap-1">
+            <Link href="/sales/create" className="bg-blue-900 text-white px-3 py-1 rounded text-sm flex items-center gap-1 hover:bg-blue-800">
               <span>+</span>
               Create Invoice
-            </button>
+            </Link>
           </div>
         </div>
 
         {/* Transaction Table */}
-        <div>
-          <table className="w-full text-sm table-fixed">
-            <thead className="bg-gray-50">
-              <tr>
-                <th 
-                  onClick={() => handleSort("date")}
-                  className="w-20 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Date{getSortIndicator("date")}
-                </th>
-                <th 
-                  onClick={() => handleSort("invoiceNo")}
-                  className="w-24 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Invoice #{getSortIndicator("invoiceNo")}
-                </th>
-                <th 
-                  onClick={() => handleSort("refNo")}
-                  className="w-16 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Ref #{getSortIndicator("refNo")}
-                </th>
-                <th 
-                  onClick={() => handleSort("buyerName")}
-                  className="w-32 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Buyer Name{getSortIndicator("buyerName")}
-                </th>
-                <th 
-                  onClick={() => handleSort("country")}
-                  className="w-16 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Country{getSortIndicator("country")}
-                </th>
-                <th 
-                  onClick={() => handleSort("airwayBill")}
-                  className="w-28 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Airway Bill{getSortIndicator("airwayBill")}
-                </th>
-                <th 
-                  onClick={() => handleSort("logistics")}
-                  className="w-20 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Logistics{getSortIndicator("logistics")}
-                </th>
-                <th 
-                  onClick={() => handleSort("sbRefNo")}
-                  className="w-16 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  SB Ref #{getSortIndicator("sbRefNo")}
-                </th>
-                <th 
-                  onClick={() => handleSort("value")}
-                  className="w-20 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Value{getSortIndicator("value")}
-                </th>
-                <th 
-                  onClick={() => handleSort("payment")}
-                  className="w-20 px-2 py-3 text-left text-xs font-semibold text-gray-700 uppercase cursor-pointer hover:bg-gray-100"
-                >
-                  Payment{getSortIndicator("payment")}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white">
-              {paginatedData.map((transaction, index) => (
-                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.date}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-blue-600 font-medium truncate">
-                    {transaction.invoiceNo}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.refNo}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.buyerName}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.country}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.airwayBill}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.logistics}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.sbRefNo}
-                  </td>
-                  <td className="px-2 py-3 text-sm font-medium text-gray-900 truncate">
-                    {transaction.value}
-                  </td>
-                  <td className="px-2 py-3 text-sm text-gray-900 truncate">
-                    {transaction.payment}
-                  </td>
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="overflow-x-auto rounded-lg">
+            <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-100">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">
+                    <input
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Invoice #</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Ref #</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Buyer Name</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Country</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Airway Bill</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Logistics</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">SB Ref #</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Value</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Payment</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedData.map((transaction, index) => (
+                  <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors last:border-b-0">
+                    <td className="px-4 py-3 text-gray-900">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.has(index)}
+                        onChange={() => handleSelectRow(index)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.date}</td>
+                    <td className="px-4 py-3">
+                      <a href={`/sales/invoice/${index + 1}`} className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium">
+                        {transaction.invoiceNo}
+                      </a>
+                    </td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.refNo}</td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.buyerName}</td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.country}</td>
+                    <td className="px-4 py-3 text-blue-600">{transaction.airwayBill}</td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.logistics}</td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.sbRefNo}</td>
+                    <td className="px-4 py-3 text-gray-900 font-medium">{transaction.value}</td>
+                    <td className="px-4 py-3 text-gray-900">{transaction.payment}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Pagination */}
@@ -365,22 +305,22 @@ export default function SalesDashboard() {
           <div className="text-sm text-gray-600">
             Showing {startIdx + 1} to {Math.min(startIdx + itemsPerPage, sortedData.length)} of {sortedData.length} results
           </div>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <button 
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="px-2 py-1 text-xs border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Prev
+              Previous
             </button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`w-6 h-6 flex items-center justify-center text-xs border ${
+                className={`w-8 h-8 flex items-center justify-center text-sm rounded ${
                   currentPage === page
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "border-gray-300 hover:bg-gray-50"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 {page}
@@ -389,7 +329,7 @@ export default function SalesDashboard() {
             <button 
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="px-2 py-1 text-xs border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>

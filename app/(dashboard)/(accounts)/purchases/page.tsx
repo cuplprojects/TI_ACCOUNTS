@@ -6,6 +6,30 @@ import Link from "next/link";
 export default function PurchasePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows(new Set());
+      setSelectAll(false);
+    } else {
+      const allRows = new Set(purchaseData.map((_, index) => index));
+      setSelectedRows(allRows);
+      setSelectAll(true);
+    }
+  };
+
+  const handleSelectRow = (index: number) => {
+    const newSelected = new Set(selectedRows);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedRows(newSelected);
+    setSelectAll(newSelected.size === purchaseData.length);
+  };
 
   const purchaseData = [
     {
@@ -65,10 +89,13 @@ export default function PurchasePage() {
               <option>This Month</option>
               <option>Last Month</option>
             </select>
-            <button className="bg-blue-600 text-white px-4 py-1.5 text-sm rounded hover:bg-blue-700 flex items-center gap-1">
+            <Link 
+              href="/purchases/create" 
+              className="bg-blue-900 text-white px-3 py-1.5 text-sm rounded hover:bg-blue-800 flex items-center gap-1"
+            >
               <span>+</span>
-              Purchase
-            </button>
+              Create Purchase
+            </Link>
           </div>
         </div>
       </div>
@@ -110,35 +137,53 @@ export default function PurchasePage() {
       </div>
 
       {/* Purchase Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Date</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Bill #</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Ref #</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Vendor Name</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900 border-r border-gray-300">Value</th>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-900">Payment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {purchaseData.map((purchase, index) => (
-              <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{purchase.date}</td>
-                <td className="px-3 py-2 border-r border-gray-200">
-                  <Link href={`/purchase/invoice/${index + 1}`} className="text-blue-600 hover:text-blue-800 cursor-pointer">
-                    {purchase.billNo}
-                  </Link>
-                </td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{purchase.refNo}</td>
-                <td className="px-3 py-2 text-gray-900 border-r border-gray-200">{purchase.vendorName}</td>
-                <td className="px-3 py-2 text-gray-900 font-medium border-r border-gray-200 text-right">{purchase.value}</td>
-                <td className="px-3 py-2 text-gray-900">{purchase.payment}</td>
+      <div className="bg-white rounded-lg shadow-sm">
+        <div className="overflow-x-auto rounded-lg">
+          <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+            <thead>
+              <tr className="border-b border-gray-200 bg-gray-100">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Bill #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Ref #</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Vendor Name</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Value</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-900">Payment</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {purchaseData.map((purchase, index) => (
+                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors last:border-b-0">
+                  <td className="px-4 py-3 text-gray-900">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.has(index)}
+                      onChange={() => handleSelectRow(index)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{purchase.date}</td>
+                  <td className="px-4 py-3">
+                    <Link href={`/purchases/bill/${index + 1}`} className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium">
+                      {purchase.billNo}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-gray-900">{purchase.refNo}</td>
+                  <td className="px-4 py-3 text-gray-900">{purchase.vendorName}</td>
+                  <td className="px-4 py-3 text-gray-900 font-medium">{purchase.value}</td>
+                  <td className="px-4 py-3 text-gray-900">{purchase.payment}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Pagination Section */}
@@ -155,10 +200,10 @@ export default function PurchasePage() {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`w-8 h-8 text-xs rounded ${
+              className={`w-8 h-8 text-sm rounded ${
                 currentPage === page
                   ? "bg-blue-600 text-white"
-                  : "text-gray-700 bg-gray-100 hover:bg-gray-200"
+                  : "text-gray-700 bg-white border border-gray-300 hover:bg-gray-50"
               }`}
             >
               {page}

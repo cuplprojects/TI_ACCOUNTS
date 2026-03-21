@@ -109,8 +109,8 @@ export default function Sidebar({ className, onNavClick }: SidebarProps) {
                     className={cn(
                       "flex items-center px-2 xs:px-3 py-2 rounded-md text-xs xs:text-sm font-medium transition-colors whitespace-nowrap",
                       isActive
-                        ? "bg-blue-00 text-white"
-                        : "text-gray-10 hover:bg-blue-00 hover:text-white"
+                        ? "bg-blue-900 text-white"
+                        : "text-gray-10 hover:bg-blue-900 hover:text-white"
                     )}
                     onMouseEnter={(e) => {
                       const imgElement = e.currentTarget.querySelector("img");
@@ -183,8 +183,8 @@ export default function Sidebar({ className, onNavClick }: SidebarProps) {
                     className={cn(
                       "flex items-center px-2 xs:px-3 py-2 rounded-md text-xs xs:text-sm font-medium transition-colors whitespace-nowrap",
                       isActive
-                        ? "bg-blue-00 text-white"
-                        : "text-gray-10 hover:bg-blue-00 hover:text-white"
+                        ? "bg-blue-900 text-white"
+                        : "text-gray-10 hover:bg-blue-900 hover:text-white"
                     )}
                     onMouseEnter={(e) => {
                       const imgElement = e.currentTarget.querySelector("img");
