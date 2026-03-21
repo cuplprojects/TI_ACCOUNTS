@@ -1,7 +1,7 @@
 // Utility functions
 
 // Type definitions
-export type UserRole = "admin" | "seller";
+export type UserRole = "admin" | "seller" | "accountant";
 
 export interface User {
   id: string;
@@ -81,6 +81,10 @@ export const isAdmin = (): boolean => {
 
 export const isSeller = (): boolean => {
   return getUserRole() === "seller";
+};
+
+export const isAccountant = (): boolean => {
+  return getUserRole() === "accountant";
 };
 
 // Path utilities

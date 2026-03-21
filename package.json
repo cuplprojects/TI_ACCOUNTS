@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
+    "dev": "next dev -p 3003",
     "build": "next build && xcopy .next\\static .next\\standalone\\.next\\static /E /I /Y && xcopy public .next\\standalone\\public /E /I /Y && del /F /Q .next\\standalone\\.env*",
     "start": "node .next/standalone/server.js",
     "lint": "next lint",
@@ -27,6 +27,7 @@
     "dotenv": "^17.2.4",
     "html2pdf.js": "^0.10.3",
     "libphonenumber-js": "^1.12.10",
+    "lucide-react": "^0.577.0",
     "next": "^15.5.9",
     "quill": "^2.0.0",
     "quill-image-resize-module-react": "^3.0.0",

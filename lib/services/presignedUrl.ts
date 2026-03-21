@@ -1,11 +1,11 @@
-import axiosInstance from "../axiosConfig";
+import axiosInstance from "../api/axios";
 import { getAuthToken } from "../config";
 import {
   showSuccessMessage,
   showErrorMessage,
   showLoading,
   closeLoading,
-} from "../swalConfig";
+} from "../config/swal";
 import axios, { AxiosError } from "axios";
 
 // Base interfaces for presigned URL requests and responses

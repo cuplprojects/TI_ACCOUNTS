@@ -88,7 +88,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.log(
           `Route change - pathname: ${pathname}, isAuthRoute: ${isAuth}`
         );
-        if (!isAuth) {
+        
+        // Only redirect if it's a protected route AND we're sure the user should be logged in
+        if (!isAuth && !pathname.includes('/invoice/') && !pathname.includes('/auth-check')) {
           console.log(
             "User not authenticated on route change, redirecting to login"
           );
@@ -133,7 +135,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   if (!authToken) {
     const isAuth = isAuthRoute(pathname);
     console.log(`Render check - pathname: ${pathname}, isAuthRoute: ${isAuth}`);
-    if (!isAuth) {
+    
+    // Allow certain pages even without auth for debugging
+    if (!isAuth && !pathname.includes('/invoice/') && !pathname.includes('/auth-check')) {
       return null; // Return null while redirecting
     }
   }
@@ -164,7 +168,7 @@ export const useRequireAuth = () => {
       
       if (!authToken) {
         if (!isAuthRoute(pathname)) {
-          router.replace("/login");
+          router.replace("/auth/login");
         }
       }
     }

@@ -1,4 +1,4 @@
-export const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || '';
+import { RECAPTCHA_SITE_KEY } from './auth';
 
 export const loadRecaptchaScript = () => {
   if (typeof window !== 'undefined' && !window.grecaptcha) {

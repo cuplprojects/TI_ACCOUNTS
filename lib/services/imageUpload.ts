@@ -1,4 +1,4 @@
-import axiosInstance from "../axiosConfig";
+import axiosInstance from "../api/axios";
 import { AxiosError } from "axios";
 
 export interface ImageUploadResponse {

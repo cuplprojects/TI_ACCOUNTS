@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "../globals.css";
-import PageTitleProvider from "../providers/PageTitleProvider";
-import { AuthProvider } from "../providers/AuthProvider";
+import "./globals.css";
+import PageTitleProvider from "./providers/PageTitleProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +21,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" href="/favicon.png" />
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        <AuthProvider>
-          <PageTitleProvider>{children}</PageTitleProvider>
-        </AuthProvider>
+        <PageTitleProvider>{children}</PageTitleProvider>
       </body>
     </html>
   );

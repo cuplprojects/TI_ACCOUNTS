@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "id": "admin-123",
+    "name": "Lokpal Parmar",
+    "email": "admin@ezmart.com",
+    "avatar": "/images/avatars/admin.jpg",
+    "role": "admin",
+    "permissions": ["all"]
+  },
+  "seller": {
+    "id": "seller-456",
+    "name": "Purushottam",
+    "email": "seller@ezmart.com",
+    "avatar": "/images/avatars/seller.jpg",
+    "role": "seller",
+    "permissions": ["orders", "products", "reports"]
+  }
+}

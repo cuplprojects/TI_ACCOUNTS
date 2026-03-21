@@ -1,0 +1,34 @@
+{
+  "navigation": [
+    {
+      "title": "Dashboard",
+      "icon": "/images/common/sidebar/dashboard.png",
+      "path": "/dashboard",
+      "userTypes": ["admin"],
+      "topLevel": true
+    },
+    {
+      "title": "Sales",
+      "icon": "/images/common/sidebar/customers.png",
+      "path": "/sales",
+      "userTypes": ["admin"],
+      "topLevel": true
+    },
+    {
+      "title": "Purchase",
+      "icon": "/images/common/sidebar/orders.png",
+      "path": "/purchases",
+      "userTypes": ["admin"],
+      "topLevel": true
+    }
+  ],
+  "others": [
+    {
+      "title": "Settings",
+      "icon": "/images/common/sidebar/settings.png",
+      "path": "/settings",
+      "userTypes": ["admin"],
+      "topLevel": false
+    }
+  ]
+}

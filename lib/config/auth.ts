@@ -12,6 +12,31 @@ export const getAuthToken = (): string | null => {
   return null;
 };
 
+// Function to check if token is expired (basic JWT check)
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    return payload.exp < currentTime;
+  } catch (error) {
+    console.error("Error checking token expiration:", error);
+    return true; // Assume expired if we can't parse
+  }
+};
+
+// Function to check if token will expire soon (within 5 minutes)
+export const isTokenExpiringSoon = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    const fiveMinutes = 5 * 60; // 5 minutes in seconds
+    return payload.exp < (currentTime + fiveMinutes);
+  } catch (error) {
+    console.error("Error checking token expiration:", error);
+    return true; // Assume expiring if we can't parse
+  }
+};
+
 // Function to set token in local storage
 export const setAuthToken = (token: string): void => {
   if (typeof window !== "undefined") {
@@ -45,28 +70,13 @@ export const removeAuthTokens = (): void => {
   }
 };
 
-// Function to set current user in local storage
-export const setCurrentUser = (user: any): void => {
-  if (typeof window !== "undefined") {
-    console.log("Setting current user:", user.email);
-    localStorage.setItem("current_user", JSON.stringify(user));
-  }
-};
-
-// Function to get current user from local storage
-export const getCurrentUser = (): any => {
-  if (typeof window !== "undefined") {
-    const user = localStorage.getItem("current_user");
-    return user ? JSON.parse(user) : null;
-  }
-  return null;
-};
-
-// Function to remove current user from local storage
+// Function to remove current user from local storage (legacy - use utils.ts instead)
 export const removeCurrentUser = (): void => {
   if (typeof window !== "undefined") {
-    console.log("Removing current user");
+    console.log("Removing current user (legacy)");
+    // Remove both old and new keys for compatibility
     localStorage.removeItem("current_user");
+    localStorage.removeItem("ezmart_user");
   }
 };
 

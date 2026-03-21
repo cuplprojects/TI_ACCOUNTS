@@ -1,5 +1,5 @@
 // Component exports for cleaner imports
-export { default as Avatar } from './common/Avatar';
+export { Avatar } from './common/Avatar';
 export { default as Button } from './common/Button';
 export { default as ComingSoon } from './common/ComingSoon';
 export { default as FormInput } from './common/FormInput';
