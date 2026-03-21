@@ -1,73 +1,121 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import accountsService from "@/lib/services/accountsService";
+import TableSkeleton from "@/app/components/common/TableSkeleton";
 
 export default function InvoiceDetailPage() {
   const params = useParams();
-  const invoiceIndex = parseInt(params.id as string) - 1;
-  
-  const invoiceData = {
-    invoiceNo: "TTE/25-26/1",
-    orderId: "TI/1110",
-    customerName: "Kristina Marfitsyna",
-    customerEmail: "kgmarfitsyna@gmail.com",
-    customerMobile: "+1 719 259 3091",
-    shippingAddress: {
-      line1: "68 Lady Hay Road",
-      line2: "Leicester",
-      line3: "LE3 9SJ",
-      line4: "United Kingdom"
-    },
-    billingAddress: {
-      line1: "1 Kiln Orchard Way",
-      line2: "Birstall, Leicester",
-      line3: "LE4 3NT",
-      line4: "United Kingdom"
-    },
-    invoiceDate: "21/05/2025",
-    invoiceCurrency: "INR",
-    exchangeRate: "1",
-    exportType: "Export with IGST",
-    payment: "RazorPay",
-    port: "INBOM4",
-    logistics: "DHL Express",
-    awb: "RY426034563IN",
-    shippingBill: "524566",
-    sbDate: "21/05/2025",
-    egm: "0003695",
-    items: [
-      { 
-        id: 1,
-        name: "Himalaya Liv.52 Tablet", 
-        qty: "10", 
-        hsn: "30049011", 
-        gst: "05%", 
-        rate: "220.00", 
-        discount: "10%", 
-        dRate: "198.00", 
-        amount: "1980.00" 
-      },
-      { 
-        id: 2,
-        name: "Baidyanath Prahakarvati 20 Tablet", 
-        qty: "05", 
-        hsn: "30049011", 
-        gst: "12%", 
-        rate: "120.00", 
-        discount: "10%", 
-        dRate: "108.00", 
-        amount: "540.00" 
+  const invoiceId = params.id as string;
+  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchInvoiceData();
+  }, [invoiceId]);
+
+  const fetchInvoiceData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await accountsService.getOrderDetails(invoiceId);
+
+      if (response.success) {
+        const order = response.data;
+        
+        console.log('Order data received:', order); // Debug log
+        
+        // Transform order data to invoice format
+        const transformedData = {
+          invoiceNo: order.OrderShipments?.[0]?.invoice_number || "N/A",
+          orderId: order.orderNumber || order.id,
+          customerName: order.User ? `${order.User.first_name} ${order.User.last_name}` : "N/A",
+          customerEmail: order.User?.email || "N/A",
+          customerMobile: order.User?.phone || "N/A",
+          shippingAddress: {
+            line1: order.shipping_address?.line1 || order.shipping_address?.address || "N/A",
+            line2: order.shipping_address?.line2 || order.shipping_address?.city || "N/A",
+            line3: order.shipping_address?.line3 || order.shipping_address?.state || "N/A",
+            line4: order.shipping_address?.line4 || order.shipping_address?.country || "N/A"
+          },
+          billingAddress: {
+            line1: order.billing_address?.line1 || order.billing_address?.address || "N/A",
+            line2: order.billing_address?.line2 || order.billing_address?.city || "N/A",
+            line3: order.billing_address?.line3 || order.billing_address?.state || "N/A",
+            line4: order.billing_address?.line4 || order.billing_address?.country || "N/A"
+          },
+          invoiceDate: order.OrderShipments?.[0]?.invoice_date ? new Date(order.OrderShipments[0].invoice_date).toLocaleDateString() : new Date(order.createdAt).toLocaleDateString(),
+          invoiceCurrency: order.Payment?.currency || "INR",
+          exchangeRate: "1",
+          exportType: "Export with IGST",
+          payment: order.Payment?.gateway || "N/A",
+          port: "INBOM4",
+          logistics: order.shipping_carrier || "N/A",
+          awb: order.OrderShipments?.[0]?.shippingOrderId || "N/A",
+          shippingBill: order.OrderShipments?.[0]?.id?.substring(0, 6) || "N/A",
+          sbDate: order.OrderShipments?.[0]?.invoice_date ? new Date(order.OrderShipments[0].invoice_date).toLocaleDateString() : "N/A",
+          egm: "0003695",
+          items: order.OrderItems?.map((item: any, idx: number) => {
+            const unitPrice = parseFloat(item.unitPrice) || 0;
+            const qty = parseInt(item.quantityRequested) || 0;
+            return {
+              id: idx + 1,
+              name: item.Product?.title || item.name || "Product",
+              qty: qty.toString(),
+              hsn: "30049011",
+              gst: "05%",
+              rate: unitPrice.toFixed(2),
+              discount: "0%",
+              dRate: unitPrice.toFixed(2),
+              amount: (qty * unitPrice).toFixed(2)
+            };
+          }) || [],
+          paymentRef: order.Payment?.id || "N/A",
+          totalItems: `${order.OrderItems?.length || 0}/${order.OrderItems?.reduce((sum: number, item: any) => sum + (parseInt(item.quantityRequested) || 0), 0) || 0}`,
+          amountInWords: "Amount in words",
+          taxableAmount: parseFloat(order.Payment?.amount || 0).toFixed(2),
+          igst: parseFloat(order.tax || 0).toFixed(2),
+          total: parseFloat(order.Payment?.amount || 0).toFixed(2)
+        };
+
+        console.log('Transformed data:', transformedData); // Debug log
+        setInvoiceData(transformedData);
+      } else {
+        setError(response.message || "Failed to fetch invoice data");
       }
-    ],
-    paymentRef: "ekjfejkdhkjhkajsdnjkjd587845155kjbkajsb",
-    totalItems: "2/15",
-    amountInWords: "Two Thousand Five Hundred And Twenty Rupees",
-    taxableAmount: "2,367.86",
-    igst: "2,367.86",
-    total: "2520.00"
+    } catch (err: any) {
+      setError(err.message || "Error fetching invoice");
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white min-h-screen p-6">
+        <TableSkeleton rows={5} columns={9} />
+      </div>
+    );
+  }
+
+  if (error || !invoiceData) {
+    return (
+      <div className="bg-white min-h-screen p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800 font-medium">Error</p>
+          <p className="text-red-600 text-sm">{error || "Invoice not found"}</p>
+          <Link href="/sales" className="mt-2 inline-block text-blue-600 hover:text-blue-800 text-sm font-medium">
+            ← Back to Sales
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white min-h-screen">
