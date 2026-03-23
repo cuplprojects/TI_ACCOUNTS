@@ -30,7 +30,7 @@ export default function InvoiceDetailPage() {
         
         // Transform order data to invoice format
         const transformedData = {
-          invoiceNo: order.invoice_number || "N/A",
+          invoiceNo: order.invoice_number || order.OrderShipments?.[0]?.invoice_number || "N/A",
           orderId: order.orderNumber || order.id,
           customerName: order.User ? `${order.User.first_name} ${order.User.last_name}` : "N/A",
           customerEmail: order.User?.email || "N/A",
@@ -49,15 +49,15 @@ export default function InvoiceDetailPage() {
           },
           invoiceDate: order.invoice_date ? new Date(order.invoice_date).toLocaleDateString() : new Date(order.createdAt).toLocaleDateString(),
           invoiceCurrency: order.Payment?.currency || "INR",
-          exchangeRate: "1",
-          exportType: "Export with IGST",
+          exchangeRate: order.exchange_rate || "1",
+          exportType: order.export_type || "Export with IGST",
           payment: order.Payment?.gateway || "N/A",
-          port: "INBOM4",
-          logistics: order.shipping_carrier || "N/A",
-          awb: order.OrderShipments?.[0]?.shippingOrderId || "N/A",
-          shippingBill: order.OrderShipments?.[0]?.id?.substring(0, 6) || "N/A",
-          sbDate: order.OrderShipments?.[0]?.invoice_date ? new Date(order.OrderShipments[0].invoice_date).toLocaleDateString() : "N/A",
-          egm: "0003695",
+          port: order.port || "INBOM4",
+          logistics: order.shipping_carrier || order.logistics || "N/A",
+          awb: order.OrderShipments?.[0]?.shippingOrderId || order.awb || "N/A",
+          shippingBill: order.OrderShipments?.[0]?.invoice_number || order.shipping_bill || "N/A",
+          sbDate: order.OrderShipments?.[0]?.invoice_date ? new Date(order.OrderShipments[0].invoice_date).toLocaleDateString() : order.sb_date || "N/A",
+          egm: order.egm || "0003695",
           items: order.OrderItems?.map((item: any, idx: number) => {
             const unitPrice = parseFloat(item.unitPrice) || 0;
             const qty = parseInt(item.quantityRequested) || 0;
@@ -65,33 +65,36 @@ export default function InvoiceDetailPage() {
               id: idx + 1,
               name: item.Product?.title || item.name || "Product",
               qty: qty.toString(),
-              hsn: "30049011",
-              gst: "05%",
+              hsn: item.hsn || "30049011",
+              gst: item.gst || "05%",
               rate: unitPrice.toFixed(2),
-              discount: "0%",
-              dRate: unitPrice.toFixed(2),
-              amount: (qty * unitPrice).toFixed(2)
+              discount: item.discount || "0%",
+              dRate: (unitPrice * (1 - (parseFloat(item.discount || "0") / 100))).toFixed(2),
+              amount: (qty * unitPrice * (1 - (parseFloat(item.discount || "0") / 100))).toFixed(2)
             };
           }) || [],
-          paymentRef: order.Payment?.id || "N/A",
+          paymentRef: order.Payment?.id || order.payment_ref || "N/A",
           totalItems: `${order.OrderItems?.length || 0}/${order.OrderItems?.reduce((sum: number, item: any) => sum + (parseInt(item.quantityRequested) || 0), 0) || 0}`,
-          amountInWords: "Amount in words",
+          amountInWords: order.amount_in_words || "Amount in words",
           taxableAmount: (() => {
             const total = order.OrderItems?.reduce((sum: number, item: any) => {
               const unitPrice = parseFloat(item.unitPrice) || 0;
               const qty = parseInt(item.quantityRequested) || 0;
-              return sum + (qty * unitPrice);
+              const discount = parseFloat(item.discount || "0") / 100;
+              return sum + (qty * unitPrice * (1 - discount));
             }, 0) || 0;
             return total.toFixed(2);
           })(),
-          igst: "0.00",
+          igst: order.igst || "0.00",
           total: (() => {
-            const total = order.OrderItems?.reduce((sum: number, item: any) => {
+            const subtotal = order.OrderItems?.reduce((sum: number, item: any) => {
               const unitPrice = parseFloat(item.unitPrice) || 0;
               const qty = parseInt(item.quantityRequested) || 0;
-              return sum + (qty * unitPrice);
+              const discount = parseFloat(item.discount || "0") / 100;
+              return sum + (qty * unitPrice * (1 - discount));
             }, 0) || 0;
-            return total.toFixed(2);
+            const igst = parseFloat(order.igst || "0");
+            return (subtotal + igst).toFixed(2);
           })()
         };
 
@@ -325,7 +328,7 @@ export default function InvoiceDetailPage() {
               </div>
             </div>
             <div className="flex gap-3 mt-6 justify-end">
-              <Link href="/sales/create?edit=true" className="bg-blue-900 text-white px-8 py-2 rounded-lg hover:bg-blue-800 font-medium inline-block">
+              <Link href={`/sales/create?edit=true&invoiceId=${invoiceData.invoiceNo}&orderId=${invoiceData.orderId}`} className="bg-blue-900 text-white px-8 py-2 rounded-lg hover:bg-blue-800 font-medium inline-block">
                 Add/ Edit Shipping Details
               </Link>
               <button className="bg-red-500 text-white px-8 py-2 rounded-lg hover:bg-red-600 font-medium">
